@@ -1,0 +1,14 @@
+.ToDoListItem {
+  border: 1px solid aquamarine;
+  margin: 12px;
+  border-radius: 4px;
+  width: 700px;
+  background-color: #fafbfd;
+  box-shadow: 1px 2px 5px 3px rgba(0, 0, 0, .1);
+  padding: 4px 2px;
+}
+
+.ToDoListItem-comment {
+  word-wrap: break-word;
+  padding: 8px;
+}
