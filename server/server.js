@@ -9,9 +9,9 @@ const { spawn } = require('child_process');
 
 var conn = mysql.createConnection({
   host: "localhost",
-  user: "vuahuyen97",
-  password: "password",
-  database: 'qtda',
+  user: "root",
+  password: "1",
+  database: 'QLDA',
   port: 3306
 });
 
@@ -106,7 +106,7 @@ app.get('/api/update/rate/:userId/:movieId' , (req, res) =>{
     }
   });
 });
-
+//get movie from database
 app.get('/api/get/movie/:id', (req, res) => {
   const query = `
   SELECT * FROM movies WHERE id = ${req.params.id};
