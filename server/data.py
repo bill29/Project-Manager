@@ -1,7 +1,6 @@
 import mysql.connector
 import csv
 import importlib
-from CF import *
 mydb = mysql.connector.connect(
   host="localhost",	
   user="root",
@@ -18,15 +17,17 @@ def load_data_from_db():
 	with open('rate.csv', 'w+', newline='') as csvfile:
 		writer = csv.writer(csvfile, delimiter=' ',quotechar='|', quoting=csv.QUOTE_MINIMAL)
 		for row in rate_data:
-			arr = list()
-			arr.append(row[0])
-			arr.append(row[1])
-			arr.append(row[2])
+			if row[2] is not None:
 
-			writer.writerow(arr)
+				arr = list()
+				arr.append(row[0])
+				arr.append(row[1])
+				arr.append(row[2])
+				writer.writerow(arr)
 			# print(row)
 	mycursor.close()
-# load_data_from_db()
+load_data_from_db()
+# print('nguyen minh dan')
 # if __name__=='__main__':
 # 	load_data_from_db()
 # 	show_result()
