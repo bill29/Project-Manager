@@ -12,7 +12,7 @@ try:
     conn = mysql.connector.connect(
         host="localhost",
         user="root",
-        password="1",
+        password="password",
         database="QLDA"
     )
 except mysql.connector.Error as err:
@@ -34,7 +34,7 @@ def index():
 @app.route('/api/logged_in', methods=['GET'])
 def logged_in():
     user =  {"user" :{}, "status" : "LOGGED_OUT"}
-    cursor = conn.cursor()
+    cursor = conn.cursor(buffered=True)
     query = "SELECT * FROM users WHERE status = 1;"
     cursor.execute(query)
     result = cursor.fetchone()
@@ -110,7 +110,7 @@ def get_movie_by_id(id):
             "id" : item[0],
             "name": item[1],
             "description": item[2],
-            "rateSocer": item[3],
+            "rateScore": item[3],
             "actors": item[4],
             "imageLink": item[5]
             # "isLike"
@@ -120,7 +120,7 @@ def get_movie_by_id(id):
     cursor.close()
     return jsonify(movie)
 # get movie by all, isLike not yet
-@app.route('/api/get/movie/all', methods =['POST', 'GET'])
+@app.route('/api/movies/all', methods =['GET'])
 def get_movie_all():
     cursor = conn.cursor()
     query = "SELECT * FROM movies ;"
@@ -135,9 +135,34 @@ def get_movie_all():
                      "id" : row[0],
                     "name": row[1],
                     "description": row[2],
-                    "rateSocer": row[3],
+                    "rateScore": row[3],
                     "actors": row[4],
                     "imageLink": row[5]
+                }
+            )
+        return jsonify({'list':arr, 'status':'success'})
+    else:
+        return jsonify({'list':arr, 'status':'failed'})
+
+@app.route('/api/movies/all/<id>', methods =['GET'])
+def get_movie_all_by_user(id):
+    cursor = conn.cursor()
+    query = "SELECT movies.*, rate.isLiked FROM movies,rate WHERE movies.id = rate.id_movie AND rate.id_user = {};".format(id)
+    cursor.execute(query)
+    result = cursor.fetchall()
+    cursor.close()
+    arr = list()
+    if result is not None:
+        for row in result:
+            arr.append(
+                {
+                     "id" : row[0],
+                    "name": row[1],
+                    "description": row[2],
+                    "rateScore": row[3],
+                    "actors": row[4],
+                    "imageLink": row[5],
+                    "isLiked": row[6]
                 }
             )
         return jsonify({'list':arr, 'status':'success'})
@@ -149,7 +174,7 @@ def get_movie_all():
 @app.route('/api/favorites/<id>', methods =['POST', 'GET'])
 def get_favorites(id):
     cursor = conn.cursor()
-    query = "SELECT movies.* FROM movies, rate WHERE movies.id = rate.id_movie AND rate.id_user={} AND rate.rate > 4;".format(id)
+    query = "SELECT movies.*, rate.isLiked FROM movies, rate WHERE movies.id = rate.id_movie AND rate.id_user={} AND rate.isLiked = 1;".format(id)
     cursor.execute(query)
     result = cursor.fetchall()
     cursor.close()
@@ -162,18 +187,28 @@ def get_favorites(id):
                         "id" : row[0],
                         "name": row[1],
                         "description": row[2],
-                        "rateSocer": row[3],
+                        "rateScore": row[3],
                         "actors": row[4],
-                        "imageLink": row[5]
+                        "imageLink": row[5],
+                        "isLiked": row[6],
                     }
                 )
             return jsonify({'list':arr, 'status':'success'})
         else:
             return jsonify({'list':arr, 'status':'failed'})
 
-@app.route('/api/update/rate/<userId>/<movieId>', methods=['POST', 'GET'])
-def update_favorites(userId, movieId):
+
+@app.route('/api/update/like/<userId>/<movieId>', methods=['GET'])
+def update_like(userId, movieId):
     query = 'UPDATE rate SET isLiked=1 WHERE id_user={} AND id_movie={};'.format(userId, movieId)
+    cursor = conn.cursor()
+    cursor.execute(query)
+    conn.commit()
+    return jsonify({"status": 'success'})
+
+@app.route('/api/update/dislike/<userId>/<movieId>', methods=['GET'])
+def update_dislike(userId, movieId):
+    query = 'UPDATE rate SET isLiked=0 WHERE id_user={} AND id_movie={};'.format(userId, movieId)
     cursor = conn.cursor()
     cursor.execute(query)
     conn.commit()

@@ -13,41 +13,48 @@ class FavoriteMovieListPage extends Component {
       user: {},
       loggedInStatus: "LOGGED_IN"
     };
-    console.log("Constructor:" , this.props.loggedInStatus)
+    console.log("Constructor:", this.props.loggedInStatus)
     this.showListMovieLiked = this.showListMovieLiked.bind(this);
   }
-  
+
   componentWillMount() {
     var list = []
     Axios.get("http://localhost:5000/api/logged_in")
-    .then(response => {
-      this.setState({ loggedInStatus: response.data.status })
-      this.setState({ user: response.data.user })
-      if (this.state.loggedInStatus === "LOGGED_IN") {
-        Axios.get(`http://localhost:5000/api/favorites/${response.data.user.id}`)
-          .then(response => {
-            if (response.data.status === "success") {
-              list = response.data.list
-              this.setState({
-                listMovies: list,
-              });
-            }
-          })
-          .catch(error => {
-            list = []
-            throw error
-          })
-      } else {
-        list = JSON.parse(localStorage.getItem("list"))
-        this.setState({
-          listMovies: list,
-        });
-      }
-    })
-    .catch(err => {
-      throw err;
-    });
-   
+      .then(response => {
+        this.setState({ loggedInStatus: response.data.status })
+        this.setState({ user: response.data.user })
+        if (this.state.loggedInStatus === "LOGGED_IN") {
+          if (localStorage.getItem("list") != null) {
+            list = JSON.parse(localStorage.getItem("list"))
+            this.setState({
+              listMovies: list,
+            });
+          } else {
+            Axios.get(`http://localhost:5000/api/favorites/${response.data.user.id}`)
+              .then(response => {
+                if (response.data.status === "success") {
+                  list = response.data.list
+                  this.setState({
+                    listMovies: list,
+                  });
+                }
+              })
+              .catch(error => {
+                list = []
+                throw error
+              })
+          }
+        } else {
+          list = JSON.parse(localStorage.getItem("list"))
+          this.setState({
+            listMovies: list,
+          });
+        }
+      })
+      .catch(err => {
+        throw err;
+      });
+
   }
 
   onChangeStatus = (id) => {
@@ -93,12 +100,11 @@ class FavoriteMovieListPage extends Component {
     );
   }
   render() {
-    console.log("Hello",this.state.props)
     return (
       <div>
         <Header state={this.props.loggedInStatus} />
         <div>
-        {this.props.match.params.likedMovie === "likedMovie"
+          {this.props.match.params.likedMovie === "likedMovie"
             ? this.showListMovieLiked(this.state.listMovies)
             : null}
         </div>

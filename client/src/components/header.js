@@ -16,7 +16,11 @@ export default class Header extends Component {
         .then(response => {
           this.setState({ loggedInStatus: response.data.status })
           this.setState({ user: response.data.user })
-          this.setState({noti: `Welcome, ${response.data.user.username}`})
+          if (response.data.status == "LOGGED_IN"){
+            this.setState({noti: `Welcome, ${response.data.user.username}`})
+          }else{
+            this.setState({noti: "Login or create an user account"})
+          }
         })
         .catch(err => {
           throw err;
@@ -24,7 +28,6 @@ export default class Header extends Component {
     }
 
     render() {
-        console.log(this.state.loggedInStatus)
         return (
             <header className="blog-header py-3">
                 <div className="row flex-nowrap justify-content-between align-items-center">
