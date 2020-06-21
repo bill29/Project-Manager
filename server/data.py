@@ -5,8 +5,8 @@ from CF import *
 mydb = mysql.connector.connect(
   host="localhost",	
   user="root",
-  password="1",
-  database="QLDA"
+  password="password",
+  database="qlda"
 )
 # print(mydb)
 

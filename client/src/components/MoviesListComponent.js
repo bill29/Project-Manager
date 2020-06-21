@@ -93,6 +93,8 @@ class MoviesListComponent extends Component {
       ],
       listMoviesLiked: [],
       term: "",
+      user: {},
+      loggedInStatus: "LOGGED_OUT"
     };
     this.searchHandler = this.searchHandler.bind(this);
   }
@@ -107,41 +109,46 @@ class MoviesListComponent extends Component {
       if (index === id) {
         item.isLiked = !item.isLiked;
         console.log("status: " + item.isLiked);
+        if (item.isLiked){
+          axios.get(`http://localhost:5000/api/update/like/${this.state.user.id}/${id+1}`)
+        }else{
+          axios.get(`http://localhost:5000/api/update/dislike/${this.state.user.id}/${id+1}`)
+        }
         this.state.listMovies[id] = item;
         this.setState({
           listMovies: this.state.listMovies,
         });
         localStorage.setItem("list", JSON.stringify(this.state.listMovies));
-        // axios.get("http://localhost:5000/api/logged_in")
-        //   .then(response => {
-        //     if (response.data.status == "LOGGED_IN") {
-        //       console.log(item.name)
-        //     }
-        //   })
-        //   .catch(error => {
-        //     throw error
-        //   })
       }
     });
   };
 
   componentWillMount() {
-    let list = this.state.listMovies;
-
-    if (localStorage.getItem("list") !== null) {
-      list = JSON.parse(localStorage.getItem("list"));
-      this.setState({
-        listMovies: list,
-      });
-    } else {
-      axios.get("http://localhost:5000/api/movies/all")
-        .then(response => {
-          if (response.data.status === "success") {
-            this.setState({ listMovies: response.data.list })
-            localStorage.setItem("list", JSON.stringify(response.data.list))
+    axios.get("http://localhost:5000/api/logged_in")
+    .then(response => {
+      this.setState({ loggedInStatus: response.data.status})
+      this.setState({ user:  response.data.user})
+      if (response.data.status == "LOGGED_OUT"){
+        axios.get("http://localhost:5000/api/movies/all")
+        .then(res => {
+          if (res.data.status === "success") {
+            this.setState({ listMovies: res.data.list })
+            localStorage.setItem("list", JSON.stringify(res.data.list))
           }
-        })
-    }
+        })    
+      }else{
+        axios.get(`http://localhost:5000/api/movies/all/${response.data.user.id}`)
+        .then(res => {
+          if (res.data.status === "success") {
+            this.setState({ listMovies: res.data.list })
+            localStorage.setItem("list", JSON.stringify(res.data.list))
+          }
+        })    
+      }
+    })
+    .catch(err => {
+      throw err;
+    });    
   }
 
   componentDidCatch() {
