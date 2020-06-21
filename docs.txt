@@ -1,0 +1,20 @@
+TÔI THẤY CÁI isLike của ô viết trong server.js bị sai lý do là vì 
+
+app.get('/api/movies/all', (req, res) => {..
+          isLiked: (item.rate === 5),...
+
+Là vì item.rate là điểm của nhà phát hành chứ không phải nó rate cá nhân thằng đấy
+
+TÔI CÓ CÁCH GIẢI QUYẾT NHƯ SAU :
+CÁI NÀO USER ĐẤY LIKE ==> LƯU NÓ ĐÁNH GIÁ 5
+CÁI NÀO LƯU LÀ 5 =>> ĐÁNH GIÁ NÓ LIKE,
+KHI TÔI TẠO RECOMMEND TÔI SẼ FAKE ĐIỂM GIẢ BÊN NGOÀI NỮA , THẾ NHÉ
+
+LÀM NHƯ THẾ RẤT DỄ SỬ LÝ (BAN ĐẦU VÀO NHẤT ĐỊNH PHẢI LOGIN NHÉ )
+KHI CHƯA LOGIN THÌ NÓ LIKE =>> KO HIÊN BÊN YÊU THÍCH,
+OKEE KO ???? 
+
+
+
+file bên kia là DATABASE CHUẨN =>>> TÔI DUMB TỪ MYSQL CỦA TÔI , Ô DOWN VỀ DÙNG CHO ĐÔNGF BỘ
+
