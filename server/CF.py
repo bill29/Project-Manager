@@ -160,10 +160,11 @@ def show_result(user):
     rs.fit()
     data_recommend = rs.recommendation(user)
     # print(type(dat?a_recommend))
+    # print(data_recommend)
     data_json = json.dumps(data_recommend)
-    # return data_json
-    print(data_json)
-show_result(1)
+    return data_json
+    # print(data_json)
+# show_result(1)
 
 
 # if __name__=='__main__':
