@@ -59,7 +59,6 @@ export default class App extends Component {
     return (
       <div className="App">
         <div className="container">
-        {/* <h3>STATUS: {this.state.loggedInStatus}</h3> */}
         <h5>{this.state.noti}</h5>
         <BrowserRouter>
           <Switch>

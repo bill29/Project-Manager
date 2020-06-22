@@ -29,7 +29,7 @@ class BoxCommentComponent extends Component {
               ></textarea>
               <form class="form-inline mt-3">
                 <button
-                  class="btn btn-primary pull-right"
+                  className="btn btn-primary pull-right"
                   type="button"
                   onClick={this.handleSubmit}
                 >
