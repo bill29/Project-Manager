@@ -3,8 +3,14 @@ from flask_cors import CORS, cross_origin
 import mysql.connector
 from mysql.connector import errorcode
 from database import setStatusOffline
-# from data import load_data_from_db
-# from CF import CF,show_result
+
+from data import load_data_from_db
+from CF import CF,show_result
+import csv
+=======
+from data import load_data_from_db
+from CF import CF,show_result
+
 app = Flask(__name__)
 #connect with mysql
 CORS(app)
@@ -12,7 +18,7 @@ try:
     conn = mysql.connector.connect(
         host="localhost",
         user="root",
-        password="password",
+        password="1",
         database="QLDA"
     )
 except mysql.connector.Error as err:
@@ -222,11 +228,14 @@ def update_dislike(userId, movieId):
 def recommend(id):
     #load data from database to file.csv
     load_data_from_db()
-    id_movie = show_result(id)
-    if id_movie is None:
-        return 'CHUA TIM THAY GOI Y'
+    # print(type(id))
+    user = int(id)
+    recommend_movie=show_result(user)
+    # print(id_movie)
+    if recommend_movie is None:
+        return {}
     else:
-        return id_movie
+        return recommend_movie
     
 if __name__ == '__main__':
     app.run(debug=True)
