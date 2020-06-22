@@ -3,9 +3,14 @@ from flask_cors import CORS, cross_origin
 import mysql.connector
 from mysql.connector import errorcode
 from database import setStatusOffline
+
 from data import load_data_from_db
 from CF import CF,show_result
 import csv
+=======
+from data import load_data_from_db
+from CF import CF,show_result
+
 app = Flask(__name__)
 #connect with mysql
 CORS(app)
@@ -100,7 +105,7 @@ def handle_login():
 @app.route('/api/get/movie/<id>', methods =['POST', 'GET'])
 def get_movie_by_id(id):
     cursor = conn.cursor()
-    query = "SELECT * FROM movies WHERE id = {};".format(id)
+    query = "SELECT movies.*, rate.isLiked FROM movies,rate WHERE movies.id = {} AND movies.id = rate.id_movie;".format(id)
     cursor.execute(query)
     result = cursor.fetchall()
     # print(result)
@@ -113,8 +118,8 @@ def get_movie_by_id(id):
             "description": item[2],
             "rateScore": item[3],
             "actors": item[4],
-            "imageLink": item[5]
-            # "isLike"
+            "imageUrl": item[5],
+            "isLike": item[6]
             #is_like khong phai la lay tu item.rate nhu la trong server.js
             #ma la phai lay tu trong bang rate, co user, co item thi moi biet duoc
         }
@@ -138,7 +143,7 @@ def get_movie_all():
                     "description": row[2],
                     "rateScore": row[3],
                     "actors": row[4],
-                    "imageLink": row[5]
+                    "imageUrl": row[5]
                 }
             )
         return jsonify({'list':arr, 'status':'success'})
@@ -162,7 +167,7 @@ def get_movie_all_by_user(id):
                     "description": row[2],
                     "rateScore": row[3],
                     "actors": row[4],
-                    "imageLink": row[5],
+                    "imageUrl": row[5],
                     "isLiked": row[6]
                 }
             )
@@ -190,7 +195,7 @@ def get_favorites(id):
                         "description": row[2],
                         "rateScore": row[3],
                         "actors": row[4],
-                        "imageLink": row[5],
+                        "imageUrl": row[5],
                         "isLiked": row[6],
                     }
                 )
