@@ -161,7 +161,7 @@ def show_result(user):
     data_recommend = rs.recommendation(user)
     # print(type(dat?a_recommend))
     # print(data_recommend)
-    data_json = json.dumps(data_recommend)
+    data_json = data_recommend
     return data_json
     # print(data_json)
 # show_result(1)

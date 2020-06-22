@@ -7,7 +7,6 @@ from database import setStatusOffline
 from data import load_data_from_db
 from CF import CF,show_result
 import csv
-=======
 from data import load_data_from_db
 from CF import CF,show_result
 
@@ -18,7 +17,7 @@ try:
     conn = mysql.connector.connect(
         host="localhost",
         user="root",
-        password="1",
+        password="password",
         database="QLDA"
     )
 except mysql.connector.Error as err:
@@ -104,7 +103,7 @@ def handle_login():
 # get movie by id movie (is like not yet)
 @app.route('/api/get/movie/<id>', methods =['POST', 'GET'])
 def get_movie_by_id(id):
-    cursor = conn.cursor()
+    cursor = conn.cursor(buffered=True)
     query = "SELECT movies.*, rate.isLiked FROM movies,rate WHERE movies.id = {} AND movies.id = rate.id_movie;".format(id)
     cursor.execute(query)
     result = cursor.fetchall()
@@ -210,6 +209,7 @@ def update_like(userId, movieId):
     cursor = conn.cursor()
     cursor.execute(query)
     conn.commit()
+    cursor.close()
     return jsonify({"status": 'success'})
 
 @app.route('/api/update/dislike/<userId>/<movieId>', methods=['GET'])
@@ -218,6 +218,7 @@ def update_dislike(userId, movieId):
     cursor = conn.cursor()
     cursor.execute(query)
     conn.commit()
+    cursor.close()
     return jsonify({"status": 'success'})
 
 
@@ -232,10 +233,27 @@ def recommend(id):
     user = int(id)
     recommend_movie=show_result(user)
     # print(id_movie)
-    if recommend_movie is None:
-        return {}
-    else:
-        return recommend_movie
+    arr = list()
+    for i in eval(recommend_movie['1']):
+        query = 'SELECT movies.*, rate.isLiked from movies,rate WHERE movies.id = {} AND rate.id_movie=movies.id;'.format(i)
+        cursor = conn.cursor(buffered=True)
+        cursor.execute(query)
+        row = cursor.fetchone()
+        cursor.close()
+        if row is not None:
+            arr.append(
+                {
+                    "id" : row[0],
+                    "name": row[1],
+                    "description": row[2],
+                    "rateScore": row[3],
+                    "actors": row[4],
+                    "imageUrl": row[5],
+                    "isLiked": row[6],
+                }
+            )
+
+    return jsonify({"list": arr})
     
 if __name__ == '__main__':
     app.run(debug=True)

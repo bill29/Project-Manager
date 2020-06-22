@@ -4,7 +4,7 @@ import importlib
 mydb = mysql.connector.connect(
   host="localhost",	
   user="root",
-  password="1",
+  password="password",
   database="QLDA"
 )
 # print(mydb)
